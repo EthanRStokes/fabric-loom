@@ -185,6 +185,16 @@ java {
 	targetCompatibility = JavaVersion.VERSION_21
 }
 
+// Create a basic jar containing only the kotlin remapper
+// Dont expect this to be stable or stay around for ever
+// But it exists if you really need to the kotlin remapper in another project
+def kotlinRemapperJar = tasks.register("kotlinRemapperJar", Jar) {
+	from tasks.named("compileKotlin").flatMap { it.destinationDirectory }
+	archiveClassifier = "kotlin-remapper"
+	exclude("**/KotlinMetadataTinyRemapperExtensionImpl.class")
+}
+build.dependsOn(kotlinRemapperJar)
+
 spotless {
 	lineEndings = com.diffplug.spotless.LineEnding.UNIX
 
@@ -322,6 +332,13 @@ publishing {
 					})
 				}
 			}
+		}
+
+		// Publish the kotlin remapper jar to the none snapshot maven
+		containerWithType(MavenPublication).matching {
+			it.name == "pluginMaven"
+		}.configureEach {
+			artifact kotlinRemapperJar
 		}
 	}
 	repositories {
