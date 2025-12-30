@@ -36,16 +36,6 @@ if (ENV.BUILD_NUMBER) {
 	version = baseVersion + '.local'
 }
 
-// We must build against the version of Kotlin Gradle ships with.
-def props = new Properties()
-Project.class.getClassLoader().getResource("gradle-kotlin-dsl-versions.properties").openStream().withCloseable {
-	props.load(it)
-}
-def kotlinVersion = props.getProperty("kotlin")
-if (libs.versions.kotlin.get() != kotlinVersion) {
-	throw new IllegalStateException("Requires Kotlin version: ${kotlinVersion}")
-}
-
 repositories {
 	maven {
 		name = 'Fabric'
